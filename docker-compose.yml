@@ -1,0 +1,35 @@
+version: '2'
+
+services:
+    db-ocs:
+      image: mysql:5.7
+      volumes:
+        - db-data:/var/lib/mysql
+      environment:
+        MYSQL_ROOT_PASSWORD: PASSWORD
+        MYSQL_USER: ocsinventory
+        MYSQL_PASSWORD: ocsinventory
+        MYSQL_DATABASE: ocsweb
+      ports:
+        - "3306:3306"
+
+    web-ocs:
+      image: slllaps/ocs-inventory:2.3
+      volumes:
+        - web-data:/usr/share/ocsinventory-reports/ocsreports
+      environment:
+        ENV_OCS_DB_HOST: db-ocs
+        ENV_OCS_DB_PORT: 3306
+        ENV_OCS_DB_NAME: ocsweb
+        ENV_OCS_DB_LOCAL: ocsweb
+        ENV_OCS_DB_USER: ocsinventory
+        ENV_OCS_DB_PWD: ocsinventory
+      links:
+        - db-ocs:db
+      ports:
+        - "80:80"
+      depends_on:
+        - "db-ocs"
+volumes:
+    db-data:
+    web-data:
